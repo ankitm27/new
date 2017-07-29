@@ -37,6 +37,7 @@ function createTask(req,res,next){
     var admin_id = req.body.user_id;
     var stage_id = req.body.stage_id;
     var user_id = req.body.assigned_user_id;
+    var user_name = req.body.user_name;
 
     const schema = Joi.object().keys({
         task_name: Joi.string().required(),
@@ -44,10 +45,12 @@ function createTask(req,res,next){
         due_date:Joi.string().required(),
         admin_id:Joi.string().required(),
         stage_id:Joi.string().required(),
-        user_id:Joi.string().required()    
+        user_id:Joi.string().required(),
+        user_name:Joi.string().required()    
+
 })
     
-    Joi.validate({ task_name: task_name, description: description, due_date: due_date,admin_id:admin_id,stage_id:stage_id,user_id:user_id }, schema, function (err, result) {
+    Joi.validate({ task_name: task_name, description: description, due_date: due_date,admin_id:admin_id,stage_id:stage_id,user_id:user_id,user_name:user_name }, schema, function (err, result) {
         if (err) {
             universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
         } else {

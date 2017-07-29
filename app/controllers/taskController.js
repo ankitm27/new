@@ -293,8 +293,10 @@ function createTask(req, res) {
     var task_name = req.body.task_name;
     var description = req.body.task_description;
     var due_date = req.body.due_date;
-    var admin_id = req.body.admin_id;
+    var user_name = req.body.user_name;
+    var admin_id = req.body.user_id;
     var stage_id = req.body.stage_id;
+    var assigned_user_id = req.body.assigned_user_id;
     async.auto({
        taskWithSameNameIsAvailableOrNot:function(cb){
            Task.count({ 'task_name': task_name },function (err, userCount) {
@@ -317,8 +319,8 @@ function createTask(req, res) {
                 admin_id: admin_id,
                 stage_id: stage_id
             }
-            if (req.body.user_id) {
-                task_row["user_id"] = req.body.user_id;
+            if (req.body.assigned_user_id) {
+                task_row["user_id"] = req.body.assigned_id;
             }
             let task = new Task(task_row)
 
@@ -326,10 +328,33 @@ function createTask(req, res) {
                 if (err) {
                     cb(resp.ERROR.INVALID_PARAMETER)
                 } else {
+                    console.log("result" + result);
                     cb(null,result)
                 }
             })
-        }]
+        }],
+        createTaskHistory:['taskWithSameNameIsAvailableOrNot','createNewTask',function(result,cb){
+            let task_name_history = {"task_id":result.createNewTask._id,"history":user_name + " added new task " + task_name};
+            let task_description_history =  {"task_id":result.createNewTask._id,"history":user_name + " added new task description " + description};
+            let due_date_history = {"task_id":result.createNewTask._id,"history":user_name + " added due date " + due_date};
+            let stage_id_history = {"task_id":result.createNewTask._id,"history":user_name + " added stage_id " + stage_id};  
+            let insert_history = [];
+            insert_history.push(task_name_history);
+            insert_history.push(task_description_history);
+            insert_history.push(due_date_history);
+            insert_history.push(stage_id_history);
+            if(req.body.assigned_user_id){
+               insert_history.push({"task_id":result.createNewTask._id,"history":user_name + " assigned task to user " + assigned_user_id}); 
+            }
+            console.log("insert_history",insert_history);
+            TaskHistory.insertMany(insert_history,function(err,result){
+                if(err){
+                    cb(resp.ERROR.ERROR_CREATE_HISTORY);
+                }else{
+                    cb(null,result);
+                }
+            })
+    }]
     }, function (err, result) {
         if (err) {
             universalfunction.sendError(err, res);
@@ -348,7 +373,8 @@ function changeTaskStage(req,res){
     var user_id = req.body.user_id;
     var task_stage_id = req.body.task_stage_id;
     var parent_id = req.body.parent_id;
-
+    var stage_name = req.body.stage_name;
+    var user_name = req.body.user_name;
     async.auto({
         checkParticularTaskbelongtoGivenUser:function(cb){
            Task.count({ '_id':task_id,'user_id':user_id },function (err, userCount) {
@@ -399,12 +425,24 @@ function changeTaskStage(req,res){
                           cb(null,res);      
                       }  
                     })
-                    
-                    
-                    
-                    
-            }
+               }
              })           
+        }],
+        createTaskStageHistory:['checkParticularTaskbelongtoGivenUser','updateTaskStage','updateParentStatus',function(result,cb){
+            if(req.body.parent_id){
+                var data_to_insert = [{"task_id":task_id,"parent_id":parent_id,"history":user_name + " change the state " + stage_name},
+                            {"task_id":parent_id,"history":user_name + " change sub task state due to that parent state change " + stage_name}
+                ]
+            }else{
+                   var data_to_insert = [{"task_id":task_id,"history":user_name + " change the state " + stage_name}];
+                }
+            TaskHistory.insertMany(data_to_insert,function(err,result){
+                if(err){
+                    cb(resp.ERROR.ERROR_CREATE_HISTORY);
+                }else{
+                    cb(null,result);
+                }
+            })
         }]
 
     },function(err,result){
@@ -434,6 +472,7 @@ function createSubTask(req,res){
     var due_date = req.body.due_date;
     var user_id = req.body.assigned_user_id;
     var stage_id = req.body.stage_id;
+    var user_name = req.body.user_name;
 
     async.auto({
         inputValidation:function(cb){
@@ -497,6 +536,19 @@ function createSubTask(req,res){
                 cb(null,result);
             }
         })
+    }],
+    createHistory:['inputValidation','createJson','savedChildTask','findParentStageId','changeParentIsChild',function(result,cb){
+        var data_to_insert = [];
+                for(var i = 0 ;i < task_name.length;i++){
+                    data_to_insert.push({"task_id":parent_id,"history":user_name + " created new subtask " + task_name[i]});
+                }
+                TaskHistory.insertMany(data_to_insert,function(err,result){
+                if(err){
+                    cb(resp.ERROR.ERROR_CREATE_HISTORY);
+                }else{
+                    cb(null,result);
+                }
+            })
     }]
 },function(err,result){
         if(err){

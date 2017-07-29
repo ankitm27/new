@@ -105,6 +105,11 @@ exports.ERROR = {
         customMessage: 'unable to change parent is child.',
         type: 'ERROR_CHANGE_PARENT_ISCHILD'
     },
+    ERROR_CREATE_HISTORY : {
+        statusCode: 401,
+        customMessage: 'There is some to create history.',
+        type: 'ERROR_CREATE_HISTORY'
+    },
 } 
 
 
