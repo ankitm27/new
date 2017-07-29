@@ -75,6 +75,36 @@ exports.ERROR = {
         customMessage: 'Task already on same state',
         type: 'CHANGING_TO_SAME_STATE'
     },
+    FIELD_VALIDATION_FAILED : {
+        statusCode: 401,
+        customMessage: 'Field validation failed',
+        type: 'FIELD_VALIDATION_FAILED'
+    },
+    NEED_ADMIN_USER_PRIVILIAGE : {
+        statusCode: 401,
+        customMessage: 'Need admin user priviliage for accessing this api',
+        type: 'NEED_ADMIN_USER_PRIVILIAGE'
+    },
+    LOGIN_FIRST : {
+        statusCode: 401,
+        customMessage: 'user need to login first',
+        type: 'LOGIN_FIRST'
+    },
+    ERROR_FETCH_DETAILS : {
+        statusCode: 401,
+        customMessage: 'There is some error in fetching detials',
+        type: 'ERROR_FETCH_DETAILS'
+    },
+    ERROR_CHANGE_PARENT_STATE : {
+        statusCode: 401,
+        customMessage: 'unable to change parent state.',
+        type: 'ERROR_CHANGE_PARENT_STATE'
+    },
+    ERROR_CHANGE_PARENT_ISCHILD : {
+        statusCode: 401,
+        customMessage: 'unable to change parent is child.',
+        type: 'ERROR_CHANGE_PARENT_ISCHILD'
+    },
 } 
 
 
@@ -130,4 +160,15 @@ exports.SUCCESS = {
         customMessage: 'Sub Task Created.',
         type: 'SUB_TASK_CREATED'
     },
+    LOGOUT_SUCCESSFULLY : {
+        statusCode: 201,
+        customMessage: 'logout successfully.',
+        type: 'LOGOUT_SUCCESSFULLY'
+    },
+    FETCH_TASK_HISTORY : {
+        statusCode: 200,
+        customMessage: 'Fetch task history.',
+        type: 'FETCH_TASK_HISTORY'
+    },
+    
 }

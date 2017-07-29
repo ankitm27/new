@@ -1,10 +1,9 @@
 var mongoose = require("mongoose");
-require('mongoose-type-email');
 var AutoIncrement = require('mongoose-sequence');
 
 var userSchema = new mongoose.Schema({
     user_name: { type: String, required: true },
-    email: { type: mongoose.SchemaTypes.Email },
+    email: { type: String },
     password: { type: String, required: true },
     user_type: { type: Number },
     created_at: {
@@ -20,6 +19,4 @@ var userSchema = new mongoose.Schema({
 });
 
 
-// userSchema.plugin(AutoIncrement);
-
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model("User", userSchema);

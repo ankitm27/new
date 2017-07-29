@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 // var session = require('./app/config/sessionParameter');
-
+var session = require('express-session')
 
 
 
@@ -22,7 +22,18 @@ var users = require('./app/routes/users');
 var tasks = require('./app/routes/tasks');
 
 var app = express();
-// app.use(session.session);
+
+// app.set('trust proxy', 1)
+
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}))
+
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
 app.set('view engine', 'jade');
