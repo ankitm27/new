@@ -15,6 +15,8 @@ exports.getAllTasks = getAllTasks;
 exports.getAllUserTasks = getAllUserTasks;
 exports.createSubTask = createSubTask;
 exports.fetchTaskHistory = fetchTaskHistory;
+exports.deleteTask = deleteTask;
+exports.deleteTaskStage = deleteTaskStage;
 
 function createTaskStage(req, res) {
     var task_sequence = req.body.task_sequence;
@@ -584,5 +586,87 @@ function fetchTaskHistory(req,res){
 }
 
 
+function deleteTask(req,res){
+    var task_id = req.body.task_id;
+    var user_id = req.body.user_id;
+    var user_name = req.body.user_name;
+    var task_name = req.body.task_name;
 
+    async.auto({
+        deleteTask:function(cb){
+            Task.remove({ $or: [ { "_id":task_id  }, { "parent_id": task_id } ] },function(err,result){
+                 if(err){
+                    logger.trace("there is some proble in delete task query",err); 
+                    cb(resp.ERROR.ERROR_FETCH_DETAILS)
+                 }else{
+                     logger.trace("delete task and all it's subtask" ,result);
+                    cb(null,result);
+         }
+            })
+        },
+      createHistory:['deleteTask',function(result,cb){
+          var data_to_insert = {"task_id":task_id,"history":user_name + "deleted the task " + task_name};
+          TaskHistory.insertMany(data_to_insert,function(err,result){
+                if(err){
+                    logger.trace("there is some proble to create task history",err);
+                    cb(resp.ERROR.ERROR_CREATE_HISTORY);
+                }else{
+                    logger.trace("successfully create history",result);
+                    cb(null,result);
+                }
+            })  
+    }]  
+    },function(err,result){
+        if(err){
+            logger.trace("there is some proble in deleting task",err);
+            universalfunction.sendError(err, res);
+        }else{
+          logger.trace("successfully deleted task",result);
+          universalfunction.sendSuccess(resp.SUCCESS.TASK_DELETED_SUCCESSFULLY, null, res);  
+       }
+    }
+    )
+}
+
+
+function deleteTaskStage(req,res){
+    var stage_id = req.body.stage_id;
+    var user_name = req.body.user_name;
+    var stage_name = req.body.stage_name;
+    async.auto({
+        checkTaskStagePresence:function(cb){
+            Task.count({"stage_id":stage_id},function(err,res){
+                if(err){
+                    logger.trace("there is some problem in mongo query",err);
+                    cb(resp.ERROR.INVALID_PARAMETER);
+                }else if(res == 1){
+                    logger.trace("task present with this stage id",res);
+                    cb(resp.ERROR.TASK_PRESENT);
+                }else{
+                    logger.trace("no task present with specific stage id",res);
+                    cb(null,res);
+                }
+            })
+        },
+        deleteTaskStage:['checkTaskStagePresence',function(result,cb){
+            TaskStage.remove({"_id":stage_id},function(err,resu){
+                if(err){
+                    logger.trace("there is some error to delete particular task stage",err);
+                    cb(resp.ERROR.ERROR_DELETE_TASKSTAGE);
+                }else{
+                    logger.trace("successfully deleted task stage",resu);
+                    cb(null,resu);
+                }
+            })
+        }]
+    },function(err,result){
+        if(err){
+            logger.trace("there is some problem to delete task stage",err);
+            universalfunction.sendError(err, res);
+        }else{
+            logger.trace("successfully deleted task stage",result);
+            universalfunction.sendSuccess(resp.SUCCESS.TASK_STAGE_SUCCESSFULLY_DELETED, null, res)
+        }
+    })
+}
 

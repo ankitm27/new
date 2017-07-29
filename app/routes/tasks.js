@@ -14,4 +14,6 @@ router.post('/getalltasks',taskController.getAllTasks);
 router.post('/getallusertasks',taskController.getAllUserTasks);
 router.post('/createsubtask',taskValidator.createSubTask,adminValidator.IsAdmin,taskController.createSubTask);
 router.post('/fetchtaskhistories',taskController.fetchTaskHistory);
+router.post('/deletetask',taskValidator.deleteTask,adminValidator.IsAdmin,taskController.deleteTask);
+router.post('/deletetaskstage',taskController.deleteTaskStage)
 module.exports = router;

@@ -110,6 +110,21 @@ exports.ERROR = {
         customMessage: 'There is some to create history.',
         type: 'ERROR_CREATE_HISTORY'
     },
+    ERROR_DELETE_TASK : {
+        statusCode: 401,
+        customMessage: 'There is some to delete history.',
+        type: ' ERROR_DELETE_TASK'
+    },
+    TASK_PRESENT : {
+        statusCode: 401,
+        customMessage: 'Task present for this stage id please first change stage id of all tasks belongs to this stage id',
+        type: 'TASK_PRESENT'
+    },
+    ERROR_DELETE_TASKSTAGE : {
+        statusCode: 401,
+        customMessage: 'There is some problem to delete task stage',
+        type: 'ERROR_DELETE_TASKSTAGE'
+    },
 } 
 
 
@@ -175,5 +190,14 @@ exports.SUCCESS = {
         customMessage: 'Fetch task history.',
         type: 'FETCH_TASK_HISTORY'
     },
-    
+    TASK_DELETED_SUCCESSFULLY : {
+        statusCode: 200,
+        customMessage: 'Task and all subtask is deleted successfully',
+        type: 'TASK_DELETED_SUCCESSFULLY'
+    },
+    TASK_STAGE_SUCCESSFULLY_DELETED : {
+        statusCode: 200,
+        customMessage: 'Task stage successfully deleted',
+        type: 'TASK_STAGE_SUCCESSFULLY_DELETED'
+    },
 }

@@ -8,6 +8,7 @@ exports.createTask = createTask;
 exports.changeTaskStage =changeTaskStage;
 exports.getAllTasks = getAllTasks;
 exports.createSubTask = createSubTask;
+exports.deleteTask = deleteTask;
 
 function createTaskStage(req, res, next) {
     var user_id = req.body.user_id;
@@ -156,7 +157,47 @@ function fetchTaskHistory(req,res){
     })
 }
 
+function deleteTask(req,res,next){
+    var task_id = req.body.task_id;
+    var user_id = req.body.user_id;
+    var user_name = req.body.user_name;
+    var task_name = req.body.task_name;
+    
+    const schema = Joi.object().keys({
+        task_id: Joi.string().required(),
+        user_id: Joi.string().required(),
+        task_name:Joi.required(),
+        user_name:Joi.string().required()            
+    })
+    Joi.validate({ task_id: task_id,user_id:user_id,task_name:task_name,user_name:user_name }, schema, function (err, result) {
+        if (err) {
+            universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
+        } else {
+            next();
+        }
 
+    })
+}
 
+function deleteTaskStage(req,res,next){
+    var stage_id = req.body.stage_id;
+    var user_name = req.body.user_name;
+    var stage_name = req.body.stage_name;
 
+    const schema = Joi.object().keys({
+        user_id:Joi.string().required(),
+        stage_id: Joi.string().required(),
+        stage_name: Joi.string().required(),
+        user_name:Joi.string().required()
+    })
+    Joi.validate({ user_id: user_id,stage_id:stage_id,stage_name:stage_name,user_name:user_name }, schema, function (err, result) {
+        if (err) {
+            universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
+        } else {
+            next();
+        }
+
+    })
+  
+}
 
