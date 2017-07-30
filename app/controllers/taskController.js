@@ -19,6 +19,7 @@ exports.deleteTask = deleteTask;
 exports.deleteTaskStage = deleteTaskStage;
 exports.getTaskStageById = getStageById;
 exports.getStageById = getStageById;
+exports.getAllChild = getAllChild;
 
 function createTaskStage(req, res) {
     var task_sequence = req.body.task_sequence;
@@ -160,7 +161,7 @@ function updateTaskStageName(req,res){
                logger.trace("there is some problem to update task stage", err); 
                cb(resp.ERROR.INVALID_PARAMETER);
             }else if(userCount!=0){
-                logger.trace("there is some problem to update task name",usercount);
+                logger.trace("there is some problem to update task name",userCount);
                 cb(resp.ERROR.TASK_ALREADY_EXIST);
             }else{
                 logger.trace("it can update task",userCount);
@@ -709,10 +710,38 @@ function getStageById(req,res){
     ],function(err,result){
         if(err){
           logger.trace("there is some problem to fetch stage id by name",err);
-          universalfunction.sendError(resp.ERROR.ERROR_STAGE_FIND_BY_ID, res);    
+          universalfunction.sendError(err, res);    
         }else{
           logger.trace("success fetch stage id by name ",result);
           universalfunction.sendSuccess(resp.SUCCESS.GET_STAGE_ID_SUCCESSFULLY, result[0], res)
+        }
+    })
+}
+
+
+
+
+function getAllChild(req,res){
+    var task_id = req.body.task_id;
+    async.auto({
+        getAllChild:function(cb){
+            Task.find({ $or:[ {'parent_id':task_id}, {'_id':task_id} ]},{"__v":0},function(err,result){
+                if(err){
+                    logger.trace("there is some problem to get all child",err);
+                    cb(resp.ERROR.ERROR_GET_ALL_CHILD);
+                }else{
+                    logger.trace("success fetch all child",result);
+                    cb(null,result);
+                }
+            })
+        }
+    },function(err,result){
+        if(err){
+            logger.trace("there is some problem to get all child",err);
+            universalfunction.sendError(err, res);
+        }else{
+            logger.trace("success fetch get all child",result);
+          universalfunction.sendSuccess(resp.SUCCESS.SUCCESSFULLY_GET_ALL_CHILD, result.getAllChild, res)
         }
     })
 }

@@ -130,6 +130,11 @@ exports.ERROR = {
         customMessage: 'There is some error to find stage by id',
         type: 'ERROR_STAGE_FIND_BY_ID'
     },
+    ERROR_GET_ALL_CHILD : {
+        statusCode: 401,
+        customMessage: 'There is some error to get all child',
+        type: 'ERROR_GET_ALL_CHILD'
+    },
 } 
 
 
@@ -209,5 +214,10 @@ exports.SUCCESS = {
         statusCode: 200,
         customMessage: 'Successfully find stage id',
         type: 'GET_STAGE_ID_SUCCESSFULLY'
+    },
+    SUCCESSFULLY_GET_ALL_CHILD : {
+        statusCode: 200,
+        customMessage: 'Successfully find all child',
+        type: 'SUCCESSFULLY_GET_ALL_CHILD'
     },
 }

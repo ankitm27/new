@@ -17,5 +17,5 @@ router.post('/fetchtaskhistories',taskValidator.fetchTaskHistory,adminValidator.
 router.post('/deletetask',taskValidator.deleteTask,adminValidator.IsAdmin,taskController.deleteTask);
 router.post('/deletetaskstage',taskValidator.deleteTaskStage,adminValidator.IsAdmin,taskController.deleteTaskStage);
 router.post('/getstagebyid',taskValidator.getStageById,taskController.getStageById);
-
+router.post('/getallchild',taskValidator.getAllChild,taskController.getAllChild);
 module.exports = router;

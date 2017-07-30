@@ -13,6 +13,7 @@ exports.getAllTaskStages = getAllTaskStages;
 exports.fetchTaskHistory = fetchTaskHistory;
 exports.deleteTaskStage = deleteTaskStage;
 exports.getStageById = getStageById;
+exports.getAllChild = getAllChild;
 
 function createTaskStage(req, res, next) {
     var user_id = req.body.user_id;
@@ -242,4 +243,18 @@ function getStageById(req,res,next){
     })
 }
 
+function getAllChild(req,res,next){
+    var task_id = req.body.task_id;
+    const schema = Joi.object().keys({
+        task_id:Joi.string().required()
+    })
+    Joi.validate({ task_id: task_id }, schema, function (err, result) {
+        if (err) {
+            universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
+        } else {
+            next();
+        }
+
+    })
+}
 
