@@ -125,6 +125,11 @@ exports.ERROR = {
         customMessage: 'There is some problem to delete task stage',
         type: 'ERROR_DELETE_TASKSTAGE'
     },
+    ERROR_STAGE_FIND_BY_ID : {
+        statusCode: 401,
+        customMessage: 'There is some error to find stage by id',
+        type: 'ERROR_STAGE_FIND_BY_ID'
+    },
 } 
 
 
@@ -199,5 +204,10 @@ exports.SUCCESS = {
         statusCode: 200,
         customMessage: 'Task stage successfully deleted',
         type: 'TASK_STAGE_SUCCESSFULLY_DELETED'
+    },
+    GET_STAGE_ID_SUCCESSFULLY : {
+        statusCode: 200,
+        customMessage: 'Successfully find stage id',
+        type: 'GET_STAGE_ID_SUCCESSFULLY'
     },
 }

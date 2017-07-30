@@ -17,6 +17,8 @@ exports.createSubTask = createSubTask;
 exports.fetchTaskHistory = fetchTaskHistory;
 exports.deleteTask = deleteTask;
 exports.deleteTaskStage = deleteTaskStage;
+exports.getTaskStageById = getStageById;
+exports.getStageById = getStageById;
 
 function createTaskStage(req, res) {
     var task_sequence = req.body.task_sequence;
@@ -80,6 +82,7 @@ function createTaskStage(req, res) {
 
 
 function getAllTaskStages(req, res) {
+     var user_id = req.body.user_id;
      TaskStage.find({},{"task_sequence":1,"_id":1,"task_name":1}, function (err, result) {
         if (err) {
             logger.trace("there is some problem to fetch all stages",err);
@@ -301,12 +304,15 @@ function createTask(req, res) {
     var assigned_user_id = req.body.assigned_user_id;
     async.auto({
        taskWithSameNameIsAvailableOrNot:function(cb){
-           Task.count({ 'task_name': task_name },function (err, userCount) {
+            Task.count({ 'task_name': task_name },function (err, userCount) {
             if(err){
+               logger.trace("thers is some problem to create task " ,err);
                cb(resp.ERROR.INVALID_PARAMETER);
             }else if(userCount!=0){
+                logger.trace("user name exist with same name ",userCount);
                 cb(resp.ERROR.USER_TASK_ALREADY_EXIST);
             }else{
+                logger.trace("user not exist with same name",userCount);
                 cb(null,userCount);
             }
     })
@@ -328,9 +334,10 @@ function createTask(req, res) {
 
             task.save(function (err, result) {
                 if (err) {
+                    logger.trace("there is some proble to save task",err);
                     cb(resp.ERROR.INVALID_PARAMETER)
                 } else {
-                    console.log("result" + result);
+                    console.log("task created ",result);
                     cb(null,result)
                 }
             })
@@ -351,16 +358,20 @@ function createTask(req, res) {
             console.log("insert_history",insert_history);
             TaskHistory.insertMany(insert_history,function(err,result){
                 if(err){
+                    logger.trace("there is some error to create task history",err);
                     cb(resp.ERROR.ERROR_CREATE_HISTORY);
                 }else{
+                    logger.trace("task history created",result);
                     cb(null,result);
                 }
             })
     }]
     }, function (err, result) {
         if (err) {
+            logger.trace("there is some error to create task ",err);
             universalfunction.sendError(err, res);
         } else {
+            logger.trace("successfully created task",res);
             universalfunction.sendSuccess(resp.SUCCESS.TASK_CREATED, null, res);
         }
     })
@@ -381,10 +392,13 @@ function changeTaskStage(req,res){
         checkParticularTaskbelongtoGivenUser:function(cb){
            Task.count({ '_id':task_id,'user_id':user_id },function (err, userCount) {
             if(err){
+                logger.trace("there is some problem to change task stage ",err);
                cb(resp.ERROR.INVALID_PARAMETER);
             }else if(userCount==0){
+                logger.trace("user not exist to particular task");
                 cb(resp.ERROR.USER_NOT_BELONG);
             }else{
+                logger.trace("user exist for this particular task",userCount);
                 cb(null,userCount);
             }
           })
@@ -392,13 +406,17 @@ function changeTaskStage(req,res){
         updateTaskStage:['checkParticularTaskbelongtoGivenUser',function(result,cb){
             Task.update({'_id':task_id,'is_child':0},{'stage_id':task_stage_id},function(err,result){
                  if(err){
+                     logger.trace("there is some proble to change stage",err);
                      cb(resp.ERROR.STAGE_NOT_CHANGE);
                  }else{
                      if(result.nModified){
+                     logger.trace("successfully updated task",task_id);
                      cb(null,result);
                   }else if(result.n){
+                        logger.trace("task is present on same stage",task_id);
                         cb(resp.ERROR.CHANGING_TO_SAME_STATE)
                     }else{
+                        logger.trace("child task exist for this task",task_id);
                         cb(resp.ERROR.CHILD_TASK_EXIST)
                     }
                  }
@@ -407,7 +425,7 @@ function changeTaskStage(req,res){
           updateParentStatus:['checkParticularTaskbelongtoGivenUser','updateTaskStage',function(result,cb){
              Task.find({"parent_id":parent_id}).populate("stage_id").exec(function(err,res){
                  if(err){
-                     console.log(err);
+                     logger.trace("there is some proble to change parent state",err);
                      cb(resp.ERROR.ERROR_CHANGE_PARENT_STATE) 
                 }else{
                     var _id = res[0].stage_id._id;
@@ -420,10 +438,10 @@ function changeTaskStage(req,res){
                     }
                     Task.update({"_id":parent_id},{"stage_id":_id},function(err,res){
                       if(err){
-                          console.log("there is some problem to  update parent stage");
+                          logger.trace("there is some problem to  update parent stage",parent_id);
                           cb(resp.ERROR.ERROR_CHANGE_PARENT_STATE)
                       }else{
-                          console.log("result",res);
+                          logger.trace("task id of parent updated successfully");
                           cb(null,res);      
                       }  
                     })
@@ -440,8 +458,10 @@ function changeTaskStage(req,res){
                 }
             TaskHistory.insertMany(data_to_insert,function(err,result){
                 if(err){
+                    logger.trace("problem to update task history",err);
                     cb(resp.ERROR.ERROR_CREATE_HISTORY);
                 }else{
+                    logger.trace("task history updated successfully".result);
                     cb(null,result);
                 }
             })
@@ -449,8 +469,10 @@ function changeTaskStage(req,res){
 
     },function(err,result){
         if(err){
+            logger.trace("there is some problem to update task history",err);
             universalfunction.sendError(err, res);
         }else{
+            logger.trace("stage changed successfully",result);
             universalfunction.sendSuccess(resp.SUCCESS.STAGE_CHANGED, null, res);
         }
     })
@@ -670,3 +692,27 @@ function deleteTaskStage(req,res){
     })
 }
 
+function getStageById(req,res){
+    var stage_id = req.body.stage_id;
+    async.series([
+        function(cb){
+           TaskStage.find({"_id":stage_id},{"task_sequence":1,"task_name":1},function(err,result){
+               if(err){
+                   logger.trace("there is some problem to fetch stage id by name ",err);
+                   cb(resp.ERROR.ERROR_STAGE_FIND_BY_ID);
+               }else{
+                   logger.trace("success fetch stage id by name ",result);
+                   cb(null,result);
+               }
+           })  
+        }
+    ],function(err,result){
+        if(err){
+          logger.trace("there is some problem to fetch stage id by name",err);
+          universalfunction.sendError(resp.ERROR.ERROR_STAGE_FIND_BY_ID, res);    
+        }else{
+          logger.trace("success fetch stage id by name ",result);
+          universalfunction.sendSuccess(resp.SUCCESS.GET_STAGE_ID_SUCCESSFULLY, result[0], res)
+        }
+    })
+}

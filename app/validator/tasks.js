@@ -9,6 +9,10 @@ exports.changeTaskStage =changeTaskStage;
 exports.getAllTasks = getAllTasks;
 exports.createSubTask = createSubTask;
 exports.deleteTask = deleteTask;
+exports.getAllTaskStages = getAllTaskStages;
+exports.fetchTaskHistory = fetchTaskHistory;
+exports.deleteTaskStage = deleteTaskStage;
+exports.getStageById = getStageById;
 
 function createTaskStage(req, res, next) {
     var user_id = req.body.user_id;
@@ -64,20 +68,24 @@ function createTask(req,res,next){
 
 
 
-function changeTaskStage(req,res){
+function changeTaskStage(req,res,next){
     var task_id = req.body.task_id;
     var user_id = req.body.user_id;
     var task_stage_id = req.body.task_stage_id;
     var parent_id = req.body.parent_id;
+    var stage_name = req.body.stage_name;
+    var user_name = req.body.user_name;
     
     const schema = Joi.object().keys({
         task_id: Joi.string().required(),
         user_id: Joi.string().required(),
         task_stage_id:Joi.string().required(),
         parent_id:Joi.string().required(),
-        })
+        stage_name:Joi.string().required(),
+        user_name:Joi.string().required()    
+    })
     
-    Joi.validate({ task_id: task_id, user_id: user_id, task_stage_id: task_stage_id,parent_id:parent_id }, schema, function (err, result) {
+    Joi.validate({ task_id: task_id, user_id: user_id, task_stage_id: task_stage_id,parent_id:parent_id,stage_name:stage_name,user_name:user_name }, schema, function (err, result) {
         if (err) {
             universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
         } else {
@@ -89,7 +97,7 @@ function changeTaskStage(req,res){
 
 
 
-function getAllTasks(req,res){
+function getAllTasks(req,res,next){
     var user_id = req.body.user_id;
     const schema = Joi.object().keys({
         user_id: Joi.string().required(),
@@ -140,14 +148,16 @@ function createSubTask(req,res,next){
 }
 
 
-function fetchTaskHistory(req,res){
+function fetchTaskHistory(req,res,next){
     var task_id = req.body.task_id;
-    
+    var user_id = req.body.user_id;
+
     const schema = Joi.object().keys({
         task_id: Joi.string().required(),
-     })
+        user_id:Joi.string().required()    
+ })
     
-    Joi.validate({ task_id: task_id }, schema, function (err, result) {
+    Joi.validate({ task_id: task_id,user_id:user_id }, schema, function (err, result) {
         if (err) {
             universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
         } else {
@@ -181,6 +191,7 @@ function deleteTask(req,res,next){
 
 function deleteTaskStage(req,res,next){
     var stage_id = req.body.stage_id;
+    var user_id = req.body.user_id;
     var user_name = req.body.user_name;
     var stage_name = req.body.stage_name;
 
@@ -200,4 +211,35 @@ function deleteTaskStage(req,res,next){
     })
   
 }
+
+function getAllTaskStages(req,res,next){
+    var user_id = req.body.user_id;
+    const schema = Joi.object().keys({
+        user_id:Joi.string().required()
+    })
+    Joi.validate({ user_id: user_id }, schema, function (err, result) {
+        if (err) {
+            universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
+        } else {
+            next();
+        }
+
+    })
+}
+
+function getStageById(req,res,next){
+    var stage_id = req.body.stage_id;
+    const schema = Joi.object().keys({
+        stage_id:Joi.string().required()
+    })
+    Joi.validate({ stage_id: stage_id }, schema, function (err, result) {
+        if (err) {
+            universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
+        } else {
+            next();
+        }
+
+    })
+}
+
 
