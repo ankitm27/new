@@ -18,9 +18,16 @@ Install mongo db in syatem
 https://docs.mongodb.com/v3.4/tutorial/install-mongodb-on-ubuntu/
 
 Install pm2 globally
+
 npm install pm2 -g
 
 clone the repo
 
-git clone
+git clone https://github.com/ankitm27/new.git
+
+move into project folder where paskage.json is available
+run npm install
+
+move into bin folder
+run the commnad pm2 start www
 
