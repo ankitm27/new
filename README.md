@@ -1,5 +1,3 @@
-# new
-
 # Task mangemant system
 
 Basically the project is based on given assignment. In this project I tried to fullfill the requirement of assigment.
@@ -17,17 +15,11 @@ https://www.metachris.com/2017/01/how-to-install-nodejs-7-on-ubuntu-and-centos/
 Install mongo db in syatem
 https://docs.mongodb.com/v3.4/tutorial/install-mongodb-on-ubuntu/
 
-Install pm2 globally
+Install pm2 globally npm install pm2 -g
 
-npm install pm2 -g
+Clone the repo git clone https://github.com/ankitm27/new.git
 
-clone the repo
+Move into project folder where paskage.json is available and run npm install
 
-git clone https://github.com/ankitm27/new.git
-
-move into project folder where paskage.json is available
-run npm install
-
-move into bin folder
-run the commnad pm2 start www
+Move into bin folder and run the commnad pm2 start www
 
