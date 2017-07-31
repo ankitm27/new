@@ -327,7 +327,7 @@ function createTask(req, res) {
                 due_date: due_date,
                 admin_id: admin_id,
                 stage_id: stage_id
-            }
+                }
             if (req.body.assigned_user_id) {
                 task_row["user_id"] = req.body.assigned_id;
             }
@@ -372,7 +372,7 @@ function createTask(req, res) {
             logger.trace("there is some error to create task ",err);
             universalfunction.sendError(err, res);
         } else {
-            logger.trace("successfully created task",res);
+            logger.trace("successfully created task",result);
             universalfunction.sendSuccess(resp.SUCCESS.TASK_CREATED, null, res);
         }
     })

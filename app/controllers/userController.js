@@ -84,6 +84,7 @@ function login(req, res) {
 							}
 							req.session.user_id = result[0]._id;
 							req.session.user_type = result[0].user_type;
+							console.log(req.session.user_type);
 							logger.trace("login successfully",err);
 							cb(null, userData);
 						} else {
@@ -109,13 +110,15 @@ function login(req, res) {
 }
 
 function logout(req, res) {
+	console.log(req.session.user_type);
 	if (req.session.user_id) {
+		// console.log(req.session.user_id);
 		req.session.destroy();
-		logger.trace("there is some problem in logout",1);
-		universalfunction.sendError(resp.ERROR.LOGIN_FIRST, res);
-	} else {
 		logger.trace("successfully logout",1)
 		universalfunction.sendError(resp.SUCCESS.LOGOUT_SUCCESSFULLY, res);
+    } else {
+		logger.trace("there is some problem in logout",1);
+		universalfunction.sendError(resp.ERROR.LOGIN_FIRST, res);
 	}
 }
 

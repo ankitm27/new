@@ -42,7 +42,7 @@ exports.ERROR = {
     },
     USER_NOT_BELONG : {
         statusCode: 401,
-        customMessage: 'Particular task is not belong to given user',
+        customMessage: 'Task is assigned to another user,only he can change the stage',
         type: 'USER_NOT_BELONG'
     },
     STAGE_NOT_CHANGE : {

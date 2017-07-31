@@ -81,12 +81,11 @@ function changeTaskStage(req,res,next){
         task_id: Joi.string().required(),
         user_id: Joi.string().required(),
         task_stage_id:Joi.string().required(),
-        parent_id:Joi.string().required(),
         stage_name:Joi.string().required(),
         user_name:Joi.string().required()    
     })
     
-    Joi.validate({ task_id: task_id, user_id: user_id, task_stage_id: task_stage_id,parent_id:parent_id,stage_name:stage_name,user_name:user_name }, schema, function (err, result) {
+    Joi.validate({ task_id: task_id, user_id: user_id, task_stage_id: task_stage_id,stage_name:stage_name,user_name:user_name }, schema, function (err, result) {
         if (err) {
             universalfunction.sendError(resp.ERROR.FIELD_VALIDATION_FAILED, res)
         } else {
